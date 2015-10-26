@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,6 +22,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     private DataManager mDataManager;
     private List<Recipe> mRecipes;
     private RecyclerView mRecyclerView;
+    private RecipeListAdapter mRecipeListAdapter;
 
     @Nullable
     @Override
@@ -29,6 +32,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecipeListAdapter = new RecipeListAdapter(getActivity(), new ArrayList<Recipe>());
+        mRecyclerView.setAdapter(mRecipeListAdapter);
         return view;
     }
 
@@ -37,7 +42,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         super.onStart();
         mDataManager = DataManager.get(getActivity());
         mDataManager.addRecipeSearchListener(this);
-        mDataManager.getRecipes();
+        mDataManager.fetchRecipes();
     }
 
     @Override
@@ -49,5 +54,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     @Override
     public void onSearchComplete() {
         mRecipes = mDataManager.getRecipes();
+        mRecipeListAdapter.setRecipeList(mRecipes);
+        mRecipeListAdapter.notifyDataSetChanged();
     }
 }

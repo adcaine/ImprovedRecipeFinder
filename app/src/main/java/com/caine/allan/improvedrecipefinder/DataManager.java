@@ -9,6 +9,8 @@ import com.caine.allan.improvedrecipefinder.data.RecipeSearchResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit.Callback;
@@ -32,10 +34,14 @@ public class DataManager {
     private List<RecipeSearchListener> mRecipeSearchListeners;
 
     private RestAdapter mRestAdapter;
+    private RecipeInterface mRecipeInterface;
     private static DataManager sDataManager;
 
     protected DataManager(RestAdapter restAdapter){
         mRestAdapter = restAdapter;
+        mRecipeSearchListeners = new ArrayList<>();
+        mRecipes = new ArrayList<>();
+        mRecipeInterface = mRestAdapter.create(RecipeInterface.class);
     }
 
     public static DataManager get(Context context){
@@ -47,15 +53,14 @@ public class DataManager {
                     .setLogLevel(RestAdapter.LogLevel.FULL)
                     .setRequestInterceptor(new RecipeRequestInterceptor())
                     .build();
+
             sDataManager = new DataManager(restAdapter);
         }
         return sDataManager;
     }
 
-    private void fetchRecipes(){
-        RecipeInterface recipeInterface = mRestAdapter.create(RecipeInterface.class);
-        recipeInterface.recipeSearch(TEST_SEARCH, new CallBackHandler());
-
+    public void fetchRecipes(){
+        mRecipeInterface.recipeSearch(TEST_SEARCH, new CallBackHandler());
     }
 
     public List<Recipe> getRecipes() {
@@ -66,6 +71,7 @@ public class DataManager {
         @Override
         public void success(RecipeSearchResponse recipeSearchResponse, Response response) {
             mRecipes = recipeSearchResponse.getRecipes();
+            notifySearchListeners();
         }
 
         @Override

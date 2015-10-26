@@ -2,6 +2,7 @@ package com.caine.allan.improvedrecipefinder.data;
 
 import retrofit.Callback;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Query;
 
 /**

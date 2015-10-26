@@ -22,4 +22,7 @@ public class Recipe {
     @SerializedName("publisher_url") private String mPublisherURL;
 
 
+    public String getTitle() {
+        return mTitle;
+    }
 }

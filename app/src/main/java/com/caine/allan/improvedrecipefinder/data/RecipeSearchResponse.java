@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class RecipeSearchResponse {
     @SerializedName("recipes") private List<Recipe> mRecipes;
+    @SerializedName("count") private int mCount;
 
     public List<Recipe> getRecipes() {
         return mRecipes;
