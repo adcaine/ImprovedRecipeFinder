@@ -1,13 +1,12 @@
 package com.caine.allan.improvedrecipefinder;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends SingleFragmentActivity {
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+    protected Fragment createFragment() {
+        return new RecipeListFragment();
     }
 }
