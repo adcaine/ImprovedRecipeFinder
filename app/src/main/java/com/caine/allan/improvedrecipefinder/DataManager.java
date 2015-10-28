@@ -70,8 +70,8 @@ public class DataManager {
         return sDataManager;
     }
 
-    public void fetchRecipes(){
-        mRecipeInterface.recipeSearch(TEST_SEARCH)
+    public void fetchRecipes(String query){
+        mRecipeInterface.recipeSearch(query)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(mProgressDialog::show)
@@ -79,10 +79,10 @@ public class DataManager {
                                                  mProgressDialog.dismiss();
                 }})
                 .subscribe(result -> {
-                            mRecipes = result.getRecipes();
-                            notifySearchListeners();
-                        },
-                        error ->
+                                mRecipes = result.getRecipes();
+                                notifySearchListeners();
+                                    },
+                            error ->
                                 Log.e(TAG, "Cannot get response: " + error));
 
     }
