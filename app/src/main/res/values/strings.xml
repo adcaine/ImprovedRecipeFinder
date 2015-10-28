@@ -3,7 +3,8 @@
     <string name="loading">Loading</string>
     <string name="search">Search</string>
     <string name="clear_search">Trending</string>
-    <string name="attribution">Attribution</string>
-    <string name="attribution_dialog_title">Attribution</string>
+    <string name="attribution">About</string>
+    <string name="attribution_dialog_title">About</string>
     <string name="attribution_dialog_content">Powered by food2fork.com</string>
+    <string name="menu_refresh">Refresh</string>
 </resources>

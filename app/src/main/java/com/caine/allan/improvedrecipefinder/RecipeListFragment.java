@@ -95,10 +95,14 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
                 QueryPreferences.clearStoredQuery(getActivity());
                 updateItems();
                 return true;
+            case R.id.menu_refresh:
+                updateItems();
+                return true;
             case R.id.menu_item_attribution:
                 FragmentManager fm = getFragmentManager();
                 AttributionDialog attributionDialog = new AttributionDialog();
                 attributionDialog.show(fm, DIALOG_ATTRIBUTION);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
