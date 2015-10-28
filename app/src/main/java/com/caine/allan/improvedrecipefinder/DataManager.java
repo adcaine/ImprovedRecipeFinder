@@ -6,20 +6,17 @@ import android.util.Log;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 import com.caine.allan.improvedrecipefinder.data.RecipeInterface;
-import com.caine.allan.improvedrecipefinder.data.RecipeSearchResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Callback;
+
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+
 import retrofit.converter.GsonConverter;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -32,7 +29,6 @@ public class DataManager {
 
     private static final String API_KEY = BuildConfig.API_KEY;
     private static final String FOOD2FORK_ENDPOINT = "http://food2fork.com/api";
-    private static final String TEST_SEARCH = "chicken noodle soup";
     private List<Recipe> mRecipes;
     private List<RecipeSearchListener> mRecipeSearchListeners;
 
@@ -76,8 +72,8 @@ public class DataManager {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(mProgressDialog::show)
                 .doOnCompleted(() -> {if(mProgressDialog != null && mProgressDialog.isShowing()){
-                                                 mProgressDialog.dismiss();
-                }})
+                                         mProgressDialog.dismiss();
+                                      }})
                 .subscribe(result -> {
                                 mRecipes = result.getRecipes();
                                 notifySearchListeners();
@@ -115,8 +111,4 @@ public class DataManager {
             listener.onSearchComplete();
         }
     }
-
-
-
-
 }

@@ -1,6 +1,5 @@
 package com.caine.allan.improvedrecipefinder.data;
 
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
