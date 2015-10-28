@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

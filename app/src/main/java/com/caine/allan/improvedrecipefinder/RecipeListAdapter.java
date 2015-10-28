@@ -8,7 +8,6 @@ import com.caine.allan.improvedrecipefinder.data.Recipe;
 
 import java.util.List;
 
-import retrofit.Callback;
 
 /**
  * Created by allancaine on 2015-10-26.

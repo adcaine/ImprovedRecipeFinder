@@ -1,7 +1,6 @@
 package com.caine.allan.improvedrecipefinder;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -34,5 +33,10 @@ public class RecipeView extends LinearLayout{
 
     public void setTitleTextView(String title){
         mTitleTextView.setText(title);
+    }
+
+    @Override
+    public String toString() {
+        return mTitleTextView.getText().toString();
     }
 }
