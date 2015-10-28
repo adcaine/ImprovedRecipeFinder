@@ -1,5 +1,6 @@
 package com.caine.allan.improvedrecipefinder;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 
@@ -18,6 +19,9 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by allancaine on 2015-10-26.
@@ -36,11 +40,19 @@ public class DataManager {
     private RecipeInterface mRecipeInterface;
     private static DataManager sDataManager;
 
-    protected DataManager(RestAdapter restAdapter){
+
+    private Context mContext;
+    private ProgressDialog mProgressDialog;
+
+    protected DataManager(RestAdapter restAdapter, Context context){
+        mContext = context;
         mRestAdapter = restAdapter;
         mRecipeSearchListeners = new ArrayList<>();
         mRecipes = new ArrayList<>();
         mRecipeInterface = mRestAdapter.create(RecipeInterface.class);
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage(mContext.getResources().getString(R.string.loading));
     }
 
     public static DataManager get(Context context){
@@ -53,30 +65,30 @@ public class DataManager {
                     .setRequestInterceptor(new RecipeRequestInterceptor())
                     .build();
 
-            sDataManager = new DataManager(restAdapter);
+            sDataManager = new DataManager(restAdapter, context);
         }
         return sDataManager;
     }
 
     public void fetchRecipes(){
-        mRecipeInterface.recipeSearch(TEST_SEARCH, new CallBackHandler());
+        mRecipeInterface.recipeSearch(TEST_SEARCH)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(mProgressDialog::show)
+                .doOnCompleted(() -> {if(mProgressDialog != null && mProgressDialog.isShowing()){
+                                                 mProgressDialog.dismiss();
+                }})
+                .subscribe(result -> {
+                            mRecipes = result.getRecipes();
+                            notifySearchListeners();
+                        },
+                        error ->
+                                Log.e(TAG, "Cannot get response: " + error));
+
     }
 
-    public List<Recipe> getRecipes() {
+    public List<Recipe> getRecipes(){
         return mRecipes;
-    }
-
-    private class CallBackHandler implements Callback<RecipeSearchResponse>{
-        @Override
-        public void success(RecipeSearchResponse recipeSearchResponse, Response response) {
-            mRecipes = recipeSearchResponse.getRecipes();
-            notifySearchListeners();
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-            Log.e(TAG, "Failed to get respose: " + error);
-        }
     }
 
     private static class RecipeRequestInterceptor implements RequestInterceptor{
