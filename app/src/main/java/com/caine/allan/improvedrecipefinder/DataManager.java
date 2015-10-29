@@ -56,7 +56,7 @@ public class DataManager {
                     .setEndpoint(FOOD2FORK_ENDPOINT)
                     .setConverter(new GsonConverter(gson))
                     .setLogLevel(RestAdapter.LogLevel.FULL)
-                    .setRequestInterceptor(new RecipeRequestInterceptor())
+                    .setRequestInterceptor(facade -> facade.addQueryParam("key", API_KEY))
                     .build();
 
             sDataManager = new DataManager(restAdapter, context);
@@ -75,13 +75,6 @@ public class DataManager {
 
     public List<Recipe> getRecipes(){
         return mRecipes;
-    }
-
-    private static class RecipeRequestInterceptor implements RequestInterceptor{
-        @Override
-        public void intercept(RequestFacade request) {
-            request.addQueryParam("key", API_KEY);
-        }
     }
 
     public interface RecipeSearchListener {
