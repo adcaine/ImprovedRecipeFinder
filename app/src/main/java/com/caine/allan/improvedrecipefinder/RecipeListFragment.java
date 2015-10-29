@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 
@@ -93,6 +94,12 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
             }
         });
 
+        searchView.setOnSearchClickListener(v -> {
+                String query = QueryPreferences.getStoredQuery(getActivity());
+                searchView.setQuery(query, false);
+            });
+
+
     }
 
     @Override
@@ -123,6 +130,9 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
                     mRecipes = recipeSearchResponse.getRecipes();
                     mRecipeListAdapter.setRecipeList(mRecipes);
                     mRecipeListAdapter.notifyDataSetChanged();
+                    if(mRecipes.size() == 0){
+                        Toast.makeText(getActivity(),R.string.no_results, Toast.LENGTH_SHORT).show();
+                    }
                 },
                         error -> Log.e(TAG, "Cannot get a response :" + error));
     }
