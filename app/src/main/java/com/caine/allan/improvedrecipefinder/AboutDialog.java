@@ -9,7 +9,7 @@ import android.support.v4.app.DialogFragment;
 /**
  * Created by allancaine on 2015-10-28.
  */
-public class AttributionDialog extends DialogFragment {
+public class AboutDialog extends DialogFragment {
 
     @NonNull
     @Override

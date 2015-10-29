@@ -1,5 +1,6 @@
 package com.caine.allan.improvedrecipefinder;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,16 +20,20 @@ import com.caine.allan.improvedrecipefinder.data.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 /**
  * Created by allancaine on 2015-10-26.
  */
 public class RecipeListFragment extends Fragment implements DataManager.RecipeSearchListener{
-    private static final String DIALOG_ATTRIBUTION = "dialog_attribution";
+    private static final String TAG = "RecipeListFragment";
+    private static final String DIALOG_ABOUT = "dialog_about";
     private DataManager mDataManager;
     private List<Recipe> mRecipes;
     private RecyclerView mRecyclerView;
     private RecipeListAdapter mRecipeListAdapter;
+
+    private ProgressDialog mDialog;
 
     @Nullable
     @Override
@@ -39,6 +45,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         mRecyclerView.setLayoutManager(layoutManager);
         mRecipeListAdapter = new RecipeListAdapter(getActivity(), new ArrayList<>());
         mRecyclerView.setAdapter(mRecipeListAdapter);
+        setupLoadingDialog();
         return view;
     }
 
@@ -52,7 +59,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     @Override
     public void onStart() {
         super.onStart();
-        mDataManager = DataManager.get(getActivity());
+        mDataManager = DataManager.get(getActivity().getApplication());
         mDataManager.addRecipeSearchListener(this);
         updateItems();
     }
@@ -100,8 +107,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
                 return true;
             case R.id.menu_item_attribution:
                 FragmentManager fm = getFragmentManager();
-                AttributionDialog attributionDialog = new AttributionDialog();
-                attributionDialog.show(fm, DIALOG_ATTRIBUTION);
+                AboutDialog aboutDialog = new AboutDialog();
+                aboutDialog.show(fm, DIALOG_ABOUT);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -110,14 +117,34 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
 
     private void updateItems() {
         String query = QueryPreferences.getStoredQuery(getActivity());
-        mDataManager.fetchRecipes(query);
+        mDataManager.fetchRecipes(query)
+                .compose(loadingTransformer())
+                .subscribe(recipeSearchResponse -> {
+                    mRecipes = recipeSearchResponse.getRecipes();
+                    mRecipeListAdapter.setRecipeList(mRecipes);
+                    mRecipeListAdapter.notifyDataSetChanged();
+                },
+                        error -> Log.e(TAG, "Cannot get a response :" + error));
+    }
+
+    private void setupLoadingDialog(){
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setIndeterminate(true);
+        mDialog.setMessage(getString(R.string.loading));
+    }
+
+    protected <T> rx.Observable.Transformer<T, T> loadingTransformer(){
+        return observable -> observable.doOnSubscribe(mDialog::show)
+                .doOnCompleted(() -> {
+                    if(mDialog != null && mDialog.isShowing()) {
+                        mDialog.dismiss();
+                    }
+                });
     }
 
 
     @Override
     public void onSearchComplete() {
-        mRecipes = mDataManager.getRecipes();
-        mRecipeListAdapter.setRecipeList(mRecipes);
-        mRecipeListAdapter.notifyDataSetChanged();
+
     }
 }

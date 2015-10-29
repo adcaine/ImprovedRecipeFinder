@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 import com.caine.allan.improvedrecipefinder.data.RecipeInterface;
+import com.caine.allan.improvedrecipefinder.data.RecipeSearchResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -17,6 +18,7 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
 import retrofit.converter.GsonConverter;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -38,7 +40,6 @@ public class DataManager {
 
 
     private Context mContext;
-    private ProgressDialog mProgressDialog;
 
     protected DataManager(RestAdapter restAdapter, Context context){
         mContext = context;
@@ -46,9 +47,6 @@ public class DataManager {
         mRecipeSearchListeners = new ArrayList<>();
         mRecipes = new ArrayList<>();
         mRecipeInterface = mRestAdapter.create(RecipeInterface.class);
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage(mContext.getResources().getString(R.string.loading));
     }
 
     public static DataManager get(Context context){
@@ -66,20 +64,11 @@ public class DataManager {
         return sDataManager;
     }
 
-    public void fetchRecipes(String query){
-        mRecipeInterface.recipeSearch(query)
+    public Observable<RecipeSearchResponse> fetchRecipes(String query){
+        return mRecipeInterface.recipeSearch(query)
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(mProgressDialog::show)
-                .doOnCompleted(() -> {if(mProgressDialog != null && mProgressDialog.isShowing()){
-                                         mProgressDialog.dismiss();
-                                      }})
-                .subscribe(result -> {
-                                mRecipes = result.getRecipes();
-                                notifySearchListeners();
-                                    },
-                            error ->
-                                Log.e(TAG, "Cannot get response: " + error));
+                .observeOn(AndroidSchedulers.mainThread());
+
 
     }
 
