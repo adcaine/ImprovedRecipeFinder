@@ -1,6 +1,7 @@
 package com.caine.allan.improvedrecipefinder;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,7 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +22,7 @@ import com.caine.allan.improvedrecipefinder.data.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
+
 
 /**
  * Created by allancaine on 2015-10-26.
@@ -98,8 +99,6 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
                 String query = QueryPreferences.getStoredQuery(getActivity());
                 searchView.setQuery(query, false);
             });
-
-
     }
 
     @Override
@@ -124,17 +123,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
 
     private void updateItems() {
         String query = QueryPreferences.getStoredQuery(getActivity());
-        mDataManager.fetchRecipes(query)
-                .compose(loadingTransformer())
-                .subscribe(recipeSearchResponse -> {
-                    mRecipes = recipeSearchResponse.getRecipes();
-                    mRecipeListAdapter.setRecipeList(mRecipes);
-                    mRecipeListAdapter.notifyDataSetChanged();
-                    if(mRecipes.size() == 0){
-                        Toast.makeText(getActivity(),R.string.no_results, Toast.LENGTH_SHORT).show();
-                    }
-                },
-                        error -> Log.e(TAG, "Cannot get a response :" + error));
+        mDataManager.fetchRecipes(query);
     }
 
     private void setupLoadingDialog(){
@@ -143,18 +132,71 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         mDialog.setMessage(getString(R.string.loading));
     }
 
-    protected <T> rx.Observable.Transformer<T, T> loadingTransformer(){
-        return observable -> observable.doOnSubscribe(mDialog::show)
-                .doOnCompleted(() -> {
-                    if(mDialog != null && mDialog.isShowing()) {
-                        mDialog.dismiss();
-                    }
-                });
-    }
-
-
     @Override
     public void onSearchComplete() {
+        mRecipes = mDataManager.getRecipes();
+        mRecipeListAdapter.setRecipeList(mRecipes);
+        mRecipeListAdapter.notifyDataSetChanged();
+        if(mDialog != null && mDialog.isShowing()){
+            mDialog.dismiss();
+        }
+    }
 
+    @Override
+    public void onSearchStart() {
+        mDialog.show();
+    }
+
+    public class RecipeListAdapter extends RecyclerView.Adapter<RecipeHolder> {
+
+        private Context mContext;
+        private List<Recipe> mRecipeList;
+
+        public RecipeListAdapter(Context context, List<Recipe> recipeList) {
+            mContext = context;
+            mRecipeList = recipeList;
+        }
+
+        public void setRecipeList(List<Recipe> recipeList) {
+            mRecipeList = recipeList;
+        }
+
+        @Override
+        public RecipeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            RecipeView recipeView = new RecipeView(mContext);
+            return new RecipeHolder(recipeView);
+        }
+
+        @Override
+        public void onBindViewHolder(RecipeHolder holder, int position) {
+            holder.bindView(mRecipeList.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return mRecipeList.size();
+        }
+    }
+
+    public class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private RecipeView mRecipeView;
+        private Recipe mRecipe;
+
+        public RecipeHolder(View itemView) {
+            super(itemView);
+            mRecipeView = (RecipeView)itemView;
+            mRecipeView.setOnClickListener(this);
+        }
+
+        public void bindView(Recipe recipe){
+            mRecipeView.setTitleTextView(recipe.getTitle());
+            mRecipe = recipe;
+        }
+
+        @Override
+        public void onClick(View v) {
+            startActivity(WebSiteActivity.newIntent(getActivity(), mRecipe.getSourceURL()));
+        }
     }
 }

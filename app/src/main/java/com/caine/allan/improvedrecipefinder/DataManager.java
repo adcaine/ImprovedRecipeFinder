@@ -64,12 +64,13 @@ public class DataManager {
         return sDataManager;
     }
 
-    public Observable<RecipeSearchResponse> fetchRecipes(String query){
-        return mRecipeInterface.recipeSearch(query)
+    public void fetchRecipes(String query){
+        mRecipeInterface.recipeSearch(query)
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
-
-
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(this::notifySearchListenersOnSearchStart)
+                .doOnCompleted(this::notifySearchListenersOnComplete)
+                .subscribe(result -> mRecipes = result.getRecipes());
     }
 
     public List<Recipe> getRecipes(){
@@ -84,6 +85,7 @@ public class DataManager {
     }
 
     public interface RecipeSearchListener {
+        void onSearchStart();
         void onSearchComplete();
     }
 
@@ -95,9 +97,15 @@ public class DataManager {
         mRecipeSearchListeners.remove(listener);
     }
 
-    private void notifySearchListeners(){
+    private void notifySearchListenersOnComplete(){
         for(RecipeSearchListener listener : mRecipeSearchListeners){
             listener.onSearchComplete();
+        }
+    }
+
+    private void notifySearchListenersOnSearchStart(){
+        for(RecipeSearchListener listener : mRecipeSearchListeners){
+            listener.onSearchStart();
         }
     }
 }

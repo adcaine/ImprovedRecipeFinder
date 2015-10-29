@@ -24,4 +24,8 @@ public class Recipe {
     public String getTitle() {
         return mTitle;
     }
+
+    public String getSourceURL() {
+        return mSourceURL;
+    }
 }
