@@ -11,6 +11,11 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        //To build this project, you will need to apply for your own api key from http://food2fork.com/about/api .  A basic plan is free.
+        // When you receive your API key from food2fork, add the following attribute to your gradle.properties file in the following form
+        // API_KEY = "your api key goes here"
+
         buildConfigField("String", "API_KEY", API_KEY)
     }
     buildTypes {
