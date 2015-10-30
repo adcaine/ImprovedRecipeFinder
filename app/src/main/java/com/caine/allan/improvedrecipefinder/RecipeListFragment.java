@@ -60,7 +60,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     @Override
     public void onStart() {
         super.onStart();
-        mDataManager = DataManager.get(getActivity().getApplication());
+        mDataManager = DataManager.get(getActivity());
         mDataManager.addRecipeSearchListener(this);
         updateItems();
     }
