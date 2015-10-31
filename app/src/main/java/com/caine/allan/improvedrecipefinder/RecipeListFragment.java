@@ -108,7 +108,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
                 updateItems();
                 return true;
             case R.id.menu_refresh:
-                updateItems();
+                updateItems(R.string.dialog_refreshing);
                 return true;
             case R.id.menu_item_attribution:
                 FragmentManager fm = getFragmentManager();
@@ -120,7 +120,12 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         }
     }
 
-    private void updateItems() {
+    private void updateItems(){
+        updateItems(R.string.dialog_loading);
+    }
+
+    private void updateItems(int stringId) {
+        mDialog.setMessage(getString(stringId));
         String query = QueryPreferences.getStoredQuery(getActivity());
         mDataManager.fetchRecipes(query);
     }
@@ -128,7 +133,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     private void setupLoadingDialog(){
         mDialog = new ProgressDialog(getActivity());
         mDialog.setIndeterminate(true);
-        mDialog.setMessage(getString(R.string.loading));
+        mDialog.setMessage(getString(R.string.dialog_loading));
     }
 
     @Override
