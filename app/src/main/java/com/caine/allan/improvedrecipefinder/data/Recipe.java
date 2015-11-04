@@ -1,6 +1,8 @@
 package com.caine.allan.improvedrecipefinder.data;
 
 
+import android.text.Html;
+
 import com.google.gson.annotations.SerializedName;
 
 
@@ -22,7 +24,7 @@ public class Recipe {
 
 
     public String getTitle() {
-        return mTitle;
+        return Html.fromHtml(mTitle).toString();
     }
 
     public String getSourceURL() {
