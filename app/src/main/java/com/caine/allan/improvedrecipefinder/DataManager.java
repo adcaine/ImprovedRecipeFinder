@@ -62,17 +62,13 @@ public class DataManager {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(this::notifySearchListenersOnSearchStart)
-                .doOnCompleted(this::notifySearchListenersOnComplete)
+                .doOnCompleted(() -> notifySearchListenersOnComplete(mRecipes))
                 .subscribe(result -> mRecipes = result.getRecipes());
-    }
-
-    public List<Recipe> getRecipes(){
-        return mRecipes;
     }
 
     public interface RecipeSearchListener {
         void onSearchStart();
-        void onSearchComplete();
+        void onSearchComplete(List<Recipe> recipes);
     }
 
     public void addRecipeSearchListener(RecipeSearchListener listener){
@@ -83,9 +79,9 @@ public class DataManager {
         mRecipeSearchListeners.remove(listener);
     }
 
-    private void notifySearchListenersOnComplete(){
+    private void notifySearchListenersOnComplete(List<Recipe> recipes){
         for(RecipeSearchListener listener : mRecipeSearchListeners){
-            listener.onSearchComplete();
+            listener.onSearchComplete(recipes);
         }
     }
 

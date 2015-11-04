@@ -30,7 +30,6 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     private static final String TAG = "RecipeListFragment";
     private static final String DIALOG_ABOUT = "dialog_about";
     private DataManager mDataManager;
-    private List<Recipe> mRecipes;
     private RecyclerView mRecyclerView;
     private RecipeListAdapter mRecipeListAdapter;
 
@@ -137,9 +136,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     }
 
     @Override
-    public void onSearchComplete() {
-        mRecipes = mDataManager.getRecipes();
-        mRecipeListAdapter.setRecipeList(mRecipes);
+    public void onSearchComplete(List<Recipe> recipes) {
+        mRecipeListAdapter.setRecipeList(recipes);
         mRecipeListAdapter.notifyDataSetChanged();
         if(mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
