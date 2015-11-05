@@ -25,6 +25,8 @@ import butterknife.ButterKnife;
  */
 public class WebSiteFragment extends Fragment  {
 
+    private static final String ARGS_URL = "args_url";
+
     private String mUrl;
 
     @Bind(R.id.webview)
@@ -36,6 +38,13 @@ public class WebSiteFragment extends Fragment  {
     @Bind(R.id.titleTextView)
     TextView mTitleTextView;
 
+    public static Fragment newInstance(String url){
+        Bundle args = new Bundle();
+        args.putString(ARGS_URL, url);
+        Fragment fragment = new WebSiteFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +52,9 @@ public class WebSiteFragment extends Fragment  {
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        mUrl = getActivity().getIntent().getData().toString();
+        Bundle args = getArguments();
+
+        mUrl = args.getString(ARGS_URL);
 
     }
 

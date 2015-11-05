@@ -1,5 +1,6 @@
 package com.caine.allan.improvedrecipefinder;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     private RecipeListAdapter mRecipeListAdapter;
 
     private ProgressDialog mDialog;
+
+    private Callbacks mCallbacks;
 
     @Nullable
     @Override
@@ -139,6 +142,9 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     public void onSearchComplete(List<Recipe> recipes) {
         mRecipeListAdapter.setRecipeList(recipes);
         mRecipeListAdapter.notifyDataSetChanged();
+        if(mCallbacks.isTablet()){
+            mCallbacks.onDetailRefresh(recipes.get(0));
+        }
         if(mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
         }
@@ -147,6 +153,29 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     @Override
     public void onSearchStart() {
         mDialog.show();
+    }
+
+    public interface Callbacks{
+        void onRecipeSelected(Recipe recipe);
+        boolean isTablet();
+        void onDetailRefresh(Recipe recipe);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Activity activity = context instanceof Activity ? (Activity)context : null;
+
+        if(activity != null){
+            mCallbacks = (Callbacks)activity;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     public class RecipeListAdapter extends RecyclerView.Adapter<RecipeHolder> {
@@ -198,7 +227,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
 
         @Override
         public void onClick(View v) {
-            startActivity(WebSiteActivity.newIntent(getActivity(), mRecipe.getSourceURL()));
+            mCallbacks.onRecipeSelected(mRecipe);
         }
     }
 }
