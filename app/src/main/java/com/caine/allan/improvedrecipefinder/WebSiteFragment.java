@@ -1,10 +1,14 @@
 package com.caine.allan.improvedrecipefinder;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
@@ -19,7 +23,7 @@ import butterknife.ButterKnife;
 /**
  * Created by allancaine on 2015-08-09.
  */
-public class WebSiteFragment extends Fragment {
+public class WebSiteFragment extends Fragment  {
 
     private String mUrl;
 
@@ -37,6 +41,7 @@ public class WebSiteFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
 
         mUrl = getActivity().getIntent().getData().toString();
 
@@ -80,5 +85,25 @@ public class WebSiteFragment extends Fragment {
         mWebView.loadUrl(mUrl);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.recipe_finder_detail, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_share:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+                intent.putExtra(Intent.EXTRA_TEXT, mUrl);
+                startActivity(Intent.createChooser(intent, getString(R.string.chooser)));
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

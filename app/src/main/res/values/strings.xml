@@ -7,6 +7,9 @@
     <string name="attribution_dialog_title">About</string>
     <string name="attribution_dialog_content">Powered by food2fork.com</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_share">Share Recipe</string>
     <string name="dialog_refreshing">Refreshing</string>
     <string name="no_results">No results</string>
+    <string name="share_subject">Sharing a Recipe with You</string>
+    <string name="chooser">Share Recipe</string>
 </resources>
