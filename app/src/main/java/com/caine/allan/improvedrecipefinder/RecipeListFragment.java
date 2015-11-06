@@ -142,8 +142,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     public void onSearchComplete(List<Recipe> recipes) {
         mRecipeListAdapter.setRecipeList(recipes);
         mRecipeListAdapter.notifyDataSetChanged();
-        if(mCallbacks.isTablet()){
-            mCallbacks.onDetailRefresh(recipes.get(0));
+        if(mCallbacks.isTablet() && mRecipeListAdapter.getItemCount() > 0){
+            mCallbacks.onDetailRefresh(mRecipeListAdapter.getRecipeList().get(0));
         }
         if(mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
@@ -190,6 +190,10 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
 
         public void setRecipeList(List<Recipe> recipeList) {
             mRecipeList = recipeList;
+        }
+
+        public List<Recipe> getRecipeList() {
+            return mRecipeList;
         }
 
         @Override
