@@ -98,6 +98,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
             public boolean onQueryTextSubmit(String query) {
                 QueryPreferences.setStoredQuery(getActivity(), query);
                 updateItems();
+                searchView.clearFocus();
                 return true;
             }
 
