@@ -9,7 +9,8 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_share">Share Recipe</string>
     <string name="dialog_refreshing">Refreshing</string>
-    <string name="no_results">No results</string>
+    <string name="no_results">No results found</string>
     <string name="share_subject">Sharing a Recipe with You</string>
     <string name="chooser">Share Recipe</string>
+    <string name="about_blank">about:blank</string>
 </resources>

@@ -17,11 +17,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 /**
@@ -31,7 +35,13 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     private static final String TAG = "RecipeListFragment";
     private static final String DIALOG_ABOUT = "dialog_about";
     private DataManager mDataManager;
-    private RecyclerView mRecyclerView;
+
+    @Bind(R.id.recipe_List_Recycler_View)
+    RecyclerView mRecyclerView;
+
+    @Bind(R.id.no_results_textview)
+    TextView mNoResultsTextView;
+
     private RecipeListAdapter mRecipeListAdapter;
 
     private ProgressDialog mDialog;
@@ -42,7 +52,8 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipe_list, container, false);
-        mRecyclerView = (RecyclerView)view.findViewById(R.id.recipe_List_Recycler_View);
+        ButterKnife.bind(this, view);
+        mNoResultsTextView.setVisibility(View.INVISIBLE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -142,9 +153,12 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
     public void onSearchComplete(List<Recipe> recipes) {
         mRecipeListAdapter.setRecipeList(recipes);
         mRecipeListAdapter.notifyDataSetChanged();
-        if(mCallbacks.isTablet() && mRecipeListAdapter.getItemCount() > 0){
-            mCallbacks.onDetailRefresh(mRecipeListAdapter.getRecipeList().get(0));
+        if(mCallbacks.isTablet()){
+                mCallbacks.onDetailRefresh(mRecipeListAdapter.getItemCount() > 0 ?
+                        mRecipeListAdapter.getRecipeList().get(0) : null);
         }
+        mNoResultsTextView.setVisibility(mRecipeListAdapter.getItemCount() > 0 ? View.INVISIBLE :
+                View.VISIBLE);
         if(mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
         }

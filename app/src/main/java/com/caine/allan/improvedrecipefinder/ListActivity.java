@@ -21,7 +21,8 @@ public class ListActivity extends SingleFragmentActivity implements RecipeListFr
 
     @Override
     public void onRecipeSelected(Recipe recipe) {
-        Fragment recipeDetail = WebSiteFragment.newInstance(recipe.getSourceURL());
+        Fragment recipeDetail = WebSiteFragment.newInstance(recipe != null ? recipe.getSourceURL() :
+                getString(R.string.about_blank));
         int replacement = isTablet() ? R.id.detail_fragment_container : R.id.fragment_container;
 
         if(isTablet()) {
