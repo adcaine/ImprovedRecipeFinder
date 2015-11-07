@@ -18,8 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.caine.allan.improvedrecipefinder.data.Recipe;
+import com.caine.allan.improvedrecipefinder.favButton.FavButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -228,7 +230,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         }
     }
 
-    public class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RecipeHolder extends RecyclerView.ViewHolder implements View.OnClickListener, FavButton.ToggleListener {
 
         private RecipeView mRecipeView;
         private Recipe mRecipe;
@@ -237,6 +239,7 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
             super(itemView);
             mRecipeView = (RecipeView)itemView;
             mRecipeView.setOnClickListener(this);
+            mRecipeView.getFavButton().setToggleListener(this);
         }
 
         public void bindView(Recipe recipe){
@@ -247,6 +250,12 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         @Override
         public void onClick(View v) {
             mCallbacks.onRecipeSelected(mRecipe);
+        }
+
+        @Override
+        public void onToggle(boolean newState) {
+            int text = newState ? R.string.toast_added_to_favs : R.string.toast_removed_from_favs;
+            Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
         }
     }
 }
