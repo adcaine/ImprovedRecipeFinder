@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 public class RecipeListFragment extends Fragment implements DataManager.RecipeSearchListener{
     private static final String TAG = "RecipeListFragment";
     private static final String DIALOG_ABOUT = "dialog_about";
+    private static final String DIALOG_ERROR = "dialog_error";
     private DataManager mDataManager;
 
     @Bind(R.id.recipe_List_Recycler_View)
@@ -109,9 +110,9 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         });
 
         searchView.setOnSearchClickListener(v -> {
-                String query = QueryPreferences.getStoredQuery(getActivity());
-                searchView.setQuery(query, false);
-            });
+            String query = QueryPreferences.getStoredQuery(getActivity());
+            searchView.setQuery(query, false);
+        });
     }
 
     @Override
@@ -160,6 +161,18 @@ public class RecipeListFragment extends Fragment implements DataManager.RecipeSe
         }
         mNoResultsTextView.setVisibility(mRecipeListAdapter.getItemCount() > 0 ? View.INVISIBLE :
                 View.VISIBLE);
+        closeProgressDialog();
+    }
+
+    @Override
+    public void onSearchError(Throwable throwable) {
+        closeProgressDialog();
+        FragmentManager fm = getFragmentManager();
+        ErrorDialog errorDialog = new ErrorDialog();
+        errorDialog.show(fm, DIALOG_ERROR);
+    }
+
+    private void closeProgressDialog(){
         if(mDialog != null && mDialog.isShowing()){
             mDialog.dismiss();
         }
