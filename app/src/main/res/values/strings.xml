@@ -17,4 +17,6 @@
     <string name="toast_added_to_favs">Added to your favorites</string>
     <string name="toast_removed_from_favs">Removed from your favorites</string>
     <string name="menu_add_remove">Add/Remove from favorites</string>
+    <string name="network_error_title">Network Error</string>
+    <string name="network_error_description">Unable to access the network</string>
 </resources>
