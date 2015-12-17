@@ -67,7 +67,7 @@ public class WebSiteFragment extends Fragment  {
 
         mProgressBar.setMax(100);
 
-        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setJavaScriptEnabled(false);
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
